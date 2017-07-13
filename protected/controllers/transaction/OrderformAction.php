@@ -25,22 +25,30 @@ class OrderformAction extends CAction{
         $is_delete = Yii::app()->request->getParam('is_delete');
         $logistics_num = Yii::app()->request->getParam('logistics_num');
         $order_arr = CTransaction::searchAllorder($page=1,$size=10,$where='');
+
         foreach($order_arr as $key=>$value)
         {
             $order_details = json_decode($value['goods_details'],true);
+
             $invoice_all = json_decode($value['invoice'],true);
             $brand_order = $order_details['goods_model'];
             $meal_order = $order_details['meal'];
-            foreach($brand_order as $brand_k=>$brand_v)
+            if($brand_order)
             {
-                $brand_order[$brand_k] = $brand_v;
+                foreach($brand_order as $brand_k=>$brand_v)
+                {
+                    $brand_order[$brand_k] = $brand_v;
+                }
             }
-            foreach($meal_order as $meal_k=>$meal_v)
+            if($meal_order)
             {
-                $meal_order[$meal_k] = $meal_v['goods_model_ids'];
-                unset($meal_order[$meal_k]['meal']);
-                unset($meal_order[$meal_k]['num']);
-                unset($meal_order[$meal_k]['goods_model_ids']);
+                foreach($meal_order as $meal_k=>$meal_v)
+                {
+                    $meal_order[$meal_k] = $meal_v['goods_model_ids'];
+                    unset($meal_order[$meal_k]['meal']);
+                    unset($meal_order[$meal_k]['num']);
+                    unset($meal_order[$meal_k]['goods_model_ids']);
+                }
             }
             $order_arr[$key]['invoice'] = $invoice_all;
             $order_arr[$key]['brand_order'] = $brand_order;
